@@ -8,17 +8,15 @@ import org.inghelram.plantjournal.R
 import org.inghelram.plantjournal.data.OverviewItem
 import org.inghelram.plantjournal.databinding.ItemMainBinding
 
-class MainAdapter(myData: List<OverviewItem>) : RecyclerView.Adapter<MainAdapter.ViewHolder>() {
-    private var data: List<OverviewItem> = myData
+class MainAdapter : RecyclerView.Adapter<MainAdapter.ViewHolder>() {
 
-    fun replaceData(myData: List<OverviewItem>?) {
-        myData?.let{
-            if (!data.containsAll(myData)) {
-                data = myData
+    var overviewItems: List<OverviewItem> = emptyList()
+        set(value) {
+            if (!field.containsAll(value)) {
+                field = value
                 notifyDataSetChanged()
             }
         }
-    }
 
     class ViewHolder(val itemMainBinding: ItemMainBinding) : RecyclerView.ViewHolder(itemMainBinding.root)
 
@@ -27,12 +25,10 @@ class MainAdapter(myData: List<OverviewItem>) : RecyclerView.Adapter<MainAdapter
         return ViewHolder(binding)
     }
 
-    override fun getItemCount(): Int {
-        return data.size
-    }
+    override fun getItemCount() = overviewItems.size
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val overviewItem = data[position]
+        val overviewItem = overviewItems[position]
         holder.itemMainBinding.overviewItem = overviewItem
     }
 }

@@ -12,14 +12,14 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import org.inghelram.plantjournal.R
 import org.inghelram.plantjournal.data.OverviewItem
-import org.inghelram.plantjournal.data.Resource
-import org.inghelram.plantjournal.data.Status
+import org.inghelram.plantjournal.data.Response
 import org.inghelram.plantjournal.databinding.FragmentMainBinding
 
 private const val NUM_OF_COLUMS = 2
 class MainFragment : Fragment() {
     private lateinit var viewModel: MainViewModel
     private lateinit var dataBinding: FragmentMainBinding
+    private val mainAdapter = MainAdapter()
 
     companion object {
         fun newInstance() = MainFragment()
@@ -36,12 +36,11 @@ class MainFragment : Fragment() {
         recyclerView.layoutManager = GridLayoutManager(activity, NUM_OF_COLUMS)
         recyclerView.setHasFixedSize(true)
 
-        val mainAdapter = MainAdapter(emptyList())
-        val listObserver = Observer<Resource<List<OverviewItem>>> { resource ->
-            if (resource.status == Status.SUCCESS) {
-                mainAdapter.replaceData(resource.data)
-            } else {
-                Toast.makeText(activity, resource.message, Toast.LENGTH_LONG).show()
+        val listObserver = Observer<Response<List<OverviewItem>>> { response ->
+            // TODO: dataBinding.progressIndicator.isVisible = response is Response.Loading
+            when (response) {
+                is Response.Success -> mainAdapter.overviewItems = response.data
+                is Response.Error -> Toast.makeText(activity, response.throwable.localizedMessage, Toast.LENGTH_LONG).show()
             }
         }
         viewModel.overviewItems.observe(viewLifecycleOwner, listObserver)
